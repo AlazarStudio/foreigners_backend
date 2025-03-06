@@ -1,7 +1,9 @@
 import asyncHandler from 'express-async-handler'
 
 import { prisma } from '../prisma.js'
-
+import XlsxPopulate from 'xlsx-populate'
+import path from 'path'
+import fs from 'fs'
 
 // @desc    Get reports
 // @route   GET /api/reports
@@ -38,17 +40,48 @@ export const getReport = asyncHandler(async (req, res) => {
 // @access  Private
 
 // Для кода отчета
+const formatDateToRussian = (dateString) => {
+	if (!dateString) return ""; // Если пустая строка
+	const [year, month, day] = dateString.split("-");
+	return `${day}.${month}.${year}`;
+};
 
 export const createNewReport = asyncHandler(async (req, res) => {
-	const {  } = req.body
+	const { type, report } = req.body
 
-	const report = await prisma.report.create({
-		data: {
-			
+	if (type == 1) {
+		try {
+			const templatePath = './templates/report1.xlsx'
+
+			const outputPath = `./uploads/Отчет по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)}.xlsx`
+
+			const workbook = await XlsxPopulate.fromFileAsync(templatePath)
+
+			const sheet = workbook.sheet(0)
+
+			sheet.find('{{examLevel}}').forEach(cell => cell.value(report.examLevel))
+			sheet.find('{{dates}}').forEach(cell => cell.value(`На период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)}`))
+			sheet.find('{{totalStudents}}').forEach(cell => cell.value(report.totalStudents))
+			sheet.find('{{passedStudents}}').forEach(cell => cell.value(report.passedStudents))
+			sheet.find('{{failedStudents}}').forEach(cell => cell.value(report.failedStudents))
+			sheet.find('{{passedPercentage}}').forEach(cell => cell.value(report.passedPercentage + '%'))
+			sheet.find('{{failedPercentage}}').forEach(cell => cell.value(report.failedPercentage + '%'))
+
+			await workbook.toFileAsync(outputPath)
+
+			res.json({
+				success: true,
+				message: 'Отчёт успешно создан',
+				filePath: outputPath
+			})
+		} catch (error) {
+			console.error('Ошибка при создании отчёта:', error)
+			res.status(500).json({
+				success: false,
+				message: 'Ошибка при создании отчёта'
+			})
 		}
-	})
-
-	res.json(report)
+	}
 })
 
 
@@ -56,7 +89,7 @@ export const createNewReport = asyncHandler(async (req, res) => {
 // @route 	PUT /api/reports/:id
 // @access  Private
 export const updateReport = asyncHandler(async (req, res) => {
-	const {  } = req.body
+	const { } = req.body
 
 	try {
 		const report = await prisma.report.update({
@@ -64,7 +97,7 @@ export const updateReport = asyncHandler(async (req, res) => {
 				id: req.params.id
 			},
 			data: {
-				
+
 			}
 		})
 
