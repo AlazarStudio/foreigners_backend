@@ -46,14 +46,25 @@ const formatDateToRussian = (dateString) => {
 	return `${day}.${month}.${year}`;
 };
 
+function getCurrentDateTimeFormatted() {
+	const now = new Date();
+  
+	const day = String(now.getDate()).padStart(2, '0');
+	const month = String(now.getMonth() + 1).padStart(2, '0'); // +1, потому что месяцы идут с 0
+	const year = now.getFullYear();
+	const hours = String(now.getHours()).padStart(2, '0');
+	const minutes = String(now.getMinutes()).padStart(2, '0');
+  
+	return `${day}-${month}-${year} ${hours}:${minutes} `;
+  }
+
 export const createNewReport = asyncHandler(async (req, res) => {
 	const { type, report } = req.body
 
-	if (type == 1) {
 		try {
-			const templatePath = './templates/report1.xlsx'
+			const templatePath = `./templates/report${type}.xlsx`
 
-			const outputPath = `./uploads/Отчет по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)}.xlsx`
+			const outputPath = `./uploads/Отчет типа ${type} по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)}.xlsx`
 
 			const workbook = await XlsxPopulate.fromFileAsync(templatePath)
 
@@ -67,6 +78,11 @@ export const createNewReport = asyncHandler(async (req, res) => {
 			sheet.find('{{passedPercentage}}').forEach(cell => cell.value(report.passedPercentage + '%'))
 			sheet.find('{{failedPercentage}}').forEach(cell => cell.value(report.failedPercentage + '%'))
 
+			sheet.find('{{firstTry}}').forEach(cell => cell.value(report.firstTry))
+			sheet.find('{{secondTry}}').forEach(cell => cell.value(report.secondTry))
+			sheet.find('{{thirdTry}}').forEach(cell => cell.value(report.thirdTry))
+			sheet.find('{{fourthOrMoreTry}}').forEach(cell => cell.value(report.fourthOrMoreTry))
+			
 			await workbook.toFileAsync(outputPath)
 
 			res.json({
@@ -81,7 +97,6 @@ export const createNewReport = asyncHandler(async (req, res) => {
 				message: 'Ошибка при создании отчёта'
 			})
 		}
-	}
 })
 
 
