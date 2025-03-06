@@ -8,13 +8,13 @@ import {
 	getReport,
 	getReports,
 	updateReport
-} from './Report.controller.js'
+} from './report.controller.js'
 
 const router = express.Router()
 
 router.route('/').post( createNewReport).get( getReports)
 
-routerА
+router
 	.route('/:id')
 	.get( getReport)
 	.put( updateReport)

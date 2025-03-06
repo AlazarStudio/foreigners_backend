@@ -8,7 +8,7 @@ import {
 	getExam,
 	getExams,
 	updateExam
-} from './_empty.controller.js'
+} from './exam.controller.js'
 
 const router = express.Router()
 
