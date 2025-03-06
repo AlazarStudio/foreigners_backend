@@ -32,18 +32,18 @@ model Exam {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   fioCyrillic      String
   fioLatin         String
-  passportNumber   Int
-  birthDate        DateTime
+  passportNumber   String
+  birthDate        String
   examType         String
   examTry          Int
   phone            String
-  registrationDate DateTime
-  examDate         DateTime
+  registrationDate String
+  examDate         String
   arrived          Boolean
   workAnnulled     Boolean
   passed           Boolean
   paid             Boolean
   serviceProvided  Boolean
   examOption       String
-  results          String[] @default(["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"])
-}
+  results          Int[] 
+  }

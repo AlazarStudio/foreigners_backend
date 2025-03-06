@@ -7,9 +7,6 @@ import { prisma } from "../prisma.js";
 // @access  Private
 export const getExams = asyncHandler(async (req, res) => {
   const exams = await prisma.exam.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
   });
   res.json(exams);
 });
@@ -19,7 +16,7 @@ export const getExams = asyncHandler(async (req, res) => {
 // @access  Private
 export const getExam = asyncHandler(async (req, res) => {
   const exam = await prisma.exam.findUnique({
-    where: { id: +req.params.id },
+    where: { id: req.params.id },
   });
 
   if (!exam) {
@@ -54,7 +51,7 @@ export const updateExam = asyncHandler(async (req, res) => {
   try {
     const exam = await prisma.exam.update({
       where: {
-        id: +req.params.id,
+        id: req.params.id,
       },
       data: { ...input },
     });
@@ -73,7 +70,7 @@ export const deleteExam = asyncHandler(async (req, res) => {
   try {
     const exam = await prisma.exam.delete({
       where: {
-        id: +req.params.id,
+        id: req.params.id,
       },
     });
 

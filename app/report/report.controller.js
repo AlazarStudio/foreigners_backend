@@ -21,7 +21,7 @@ export const getReports = asyncHandler(async (req, res) => {
 // @access  Private
 export const getReport = asyncHandler(async (req, res) => {
 	const report = await prisma.report.findUnique({
-		where: { id: +req.params.id }
+		where: { id: req.params.id }
 	})
 
 	if (!report) {
@@ -36,6 +36,9 @@ export const getReport = asyncHandler(async (req, res) => {
 // @desc    Create new report
 // @route 	POST /api/reports
 // @access  Private
+
+// Для кода отчета
+
 export const createNewReport = asyncHandler(async (req, res) => {
 	const {  } = req.body
 
@@ -58,7 +61,7 @@ export const updateReport = asyncHandler(async (req, res) => {
 	try {
 		const report = await prisma.report.update({
 			where: {
-				id: +req.params.id
+				id: req.params.id
 			},
 			data: {
 				
@@ -80,7 +83,7 @@ export const deleteReport = asyncHandler(async (req, res) => {
 	try {
 		const report = await prisma.report.delete({
 			where: {
-				id: +req.params.id
+				id: req.params.id
 			}
 		})
 
