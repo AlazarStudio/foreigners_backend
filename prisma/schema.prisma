@@ -26,7 +26,10 @@ model User {
 model Report {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  url  String
+  url  String 
+  reportDateStart String
+  reportDateEnd String
+  createdAt DateTime @default(now()) @map("created_at")
 }
 
 model Exam {

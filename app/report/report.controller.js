@@ -10,9 +10,6 @@ import fs from 'fs'
 // @access  Private
 export const getReports = asyncHandler(async (req, res) => {
 	const reports = await prisma.report.findMany({
-		orderBy: {
-			createdAt: 'desc'
-		}
 	})
 	res.json(reports)
 })
@@ -47,16 +44,16 @@ const formatDateToRussian = (dateString) => {
 };
 
 function getCurrentDateTimeFormatted() {
-    const now = new Date();
+	const now = new Date();
 
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // +1, потому что месяцы идут с 0
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0'); // Добавляем секунды
+	const day = String(now.getDate()).padStart(2, '0');
+	const month = String(now.getMonth() + 1).padStart(2, '0'); // +1, потому что месяцы идут с 0
+	const year = now.getFullYear();
+	const hours = String(now.getHours()).padStart(2, '0');
+	const minutes = String(now.getMinutes()).padStart(2, '0');
+	const seconds = String(now.getSeconds()).padStart(2, '0'); // Добавляем секунды
 
-    return `${day}.${month}.${year} ${hours}-${minutes}-${seconds}`;
+	return `${day}.${month}.${year} ${hours}-${minutes}-${seconds}`;
 }
 
 export const createNewReport = asyncHandler(async (req, res) => {
@@ -143,17 +140,20 @@ export const createNewReport = asyncHandler(async (req, res) => {
 		sheet.find('{{RLAWHQ}}').forEach(cell => cell.value(report.blocks["Основы законодательства РФ"].hardestQuestions.map(q => `№${q.question}`).join(", ")))
 
 		await workbook.toFileAsync(outputPath)
+
+		// console.log("\n Done!", reportName, "\n sdf", outputPath)
 		await prisma.report.create({
 			data: {
 				name: reportName,
-				url: outputPath
+				url: `uploads/${reportName}`,
+				reportDateStart: report.startDate,
+				reportDateEnd: report.endDate
 			}
 		})
 
 		res.json({
 			success: true,
-			message: 'Отчёт успешно создан',
-			filePath: outputPath
+			filePath: `uploads/${reportName}`
 		})
 	} catch (error) {
 		console.error('Ошибка при создании отчёта:', error)
