@@ -47,15 +47,16 @@ const formatDateToRussian = (dateString) => {
 };
 
 function getCurrentDateTimeFormatted() {
-	const now = new Date();
+    const now = new Date();
 
-	const day = String(now.getDate()).padStart(2, '0');
-	const month = String(now.getMonth() + 1).padStart(2, '0'); // +1, потому что месяцы идут с 0
-	const year = now.getFullYear();
-	const hours = String(now.getHours()).padStart(2, '0');
-	const minutes = String(now.getMinutes()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // +1, потому что месяцы идут с 0
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0'); // Добавляем секунды
 
-	return `${day}-${month}-${year} ${hours}:${minutes} `;
+    return `${day}.${month}.${year} ${hours}-${minutes}-${seconds}`;
 }
 
 export const createNewReport = asyncHandler(async (req, res) => {
@@ -64,7 +65,7 @@ export const createNewReport = asyncHandler(async (req, res) => {
 	try {
 		const templatePath = `./templates/report${type}.xlsx`
 
-		const outputPath = `./uploads/Отчет типа ${type} по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)}.xlsx`
+		const outputPath = `./uploads/Отчет типа ${type} по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)} - ${getCurrentDateTimeFormatted()}.xlsx`
 
 		const workbook = await XlsxPopulate.fromFileAsync(templatePath)
 
@@ -85,9 +86,7 @@ export const createNewReport = asyncHandler(async (req, res) => {
 		sheet.find('{{thirdTry}}').forEach(cell => cell.value(report.thirdTry))
 		sheet.find('{{fourthOrMoreTry}}').forEach(cell => cell.value(report.fourthOrMoreTry))
 
-
 		// 3
-
 		sheet.find('{{RL1}}').forEach(cell => cell.value(report.blocks["Русский язык"].questionStats[0]))
 		sheet.find('{{RL2}}').forEach(cell => cell.value(report.blocks["Русский язык"].questionStats[1]))
 		sheet.find('{{RL3}}').forEach(cell => cell.value(report.blocks["Русский язык"].questionStats[2]))
