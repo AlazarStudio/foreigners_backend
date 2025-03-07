@@ -65,7 +65,8 @@ export const createNewReport = asyncHandler(async (req, res) => {
 	try {
 		const templatePath = `./templates/report${type}.xlsx`
 
-		const outputPath = `./uploads/Отчет типа ${type} по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)} - ${getCurrentDateTimeFormatted()}.xlsx`
+		const reportName = `Отчет типа ${type} по ${report.examLevel} на период с ${formatDateToRussian(report.startDate)} по ${formatDateToRussian(report.endDate)} - ${getCurrentDateTimeFormatted()}.xlsx`
+		const outputPath = `./uploads/${reportName}`
 
 		const workbook = await XlsxPopulate.fromFileAsync(templatePath)
 
@@ -142,6 +143,12 @@ export const createNewReport = asyncHandler(async (req, res) => {
 		sheet.find('{{RLAWHQ}}').forEach(cell => cell.value(report.blocks["Основы законодательства РФ"].hardestQuestions.map(q => `№${q.question}`).join(", ")))
 
 		await workbook.toFileAsync(outputPath)
+		await prisma.report.create({
+			data: {
+				name: reportName,
+				url: outputPath
+			}
+		})
 
 		res.json({
 			success: true,

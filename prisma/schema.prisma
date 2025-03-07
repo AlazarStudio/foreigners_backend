@@ -24,12 +24,13 @@ model User {
 }
 
 model Report {
-  id  String @id @default(auto()) @map("_id") @db.ObjectId
-  url String
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  url  String
 }
 
 model Exam {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
   fioCyrillic      String
   fioLatin         String
   passportNumber   String
@@ -45,5 +46,5 @@ model Exam {
   paid             Boolean
   serviceProvided  Boolean
   examOption       String
-  results          Int[] 
-  }
+  results          Int[]
+}
